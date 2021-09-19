@@ -1,12 +1,13 @@
-import { createStore } from "redux";
-import { createAction, createReducer } from "@reduxjs/toolkit";
+import { configureStore, createAction, createReducer } from "@reduxjs/toolkit";
 
 const TODO_LIST = "TODO_LIST";
 
 const addToDo = createAction("ADD");
 const deleteToDo = createAction("DELETE");
 
-const reducer = createReducer([], {
+const initState = JSON.parse(localStorage.getItem(TODO_LIST)) || [];
+
+const reducer = createReducer(initState, {
   [addToDo]: (state, action) => {
     state.push({ text: action.payload, id: Date.now() });
   },
@@ -14,9 +15,7 @@ const reducer = createReducer([], {
     state.filter((toDo) => toDo.id !== action.payload),
 });
 
-const initState = JSON.parse(localStorage.getItem(TODO_LIST)) || [];
-
-const store = createStore(reducer, initState);
+const store = configureStore({ reducer });
 
 store.subscribe(() =>
   localStorage.setItem(TODO_LIST, JSON.stringify(store.getState()))
